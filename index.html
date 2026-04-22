@@ -288,12 +288,13 @@
     <div class="container-fluid px-3 px-md-4 d-flex align-items-center justify-content-between">
       <div class="brand-badge">
         <span class="badge text-bg-dark rounded-pill">YAMIZEY - EMQUIZ</span>
-        <span>Acil Tıp Asistan Bilgi Yarışması 2026 | v1.10.51.BC.1.41 | © yamizey yazılım</span>
+        <span>Acil Tıp Asistan Bilgi Yarışması 2026 | v1.10.51.BC.1.43 | © yamizey yazılım</span>
       </div>
       <div class="d-flex align-items-center gap-2">
-        <span id="stagePill" class="stage-pill d-none">AŞAMA</span>
-        <span id="subStagePill" class="stage-pill d-none">—</span>
-      </div>
+  <span id="globalQuestionPill" class="stage-pill d-none">YARIŞMANIN 1.SORUSU</span>
+  <span id="stagePill" class="stage-pill d-none">AŞAMA</span>
+  <span id="subStagePill" class="stage-pill d-none">—</span>
+</div>
     </div>
   </div>
 
@@ -1374,6 +1375,7 @@ Nabız yok biz varız
   tieBreakExtra: {},
   stageTieExtra: {},
   lastScoreAction: null,
+      globalQuestionNumber: 0,
 };
 
     const STAGES = [
@@ -1452,11 +1454,14 @@ function stopStandby(){
 }
 
     function formatStagePills(){
-      $('stagePill').classList.remove('d-none');
-      $('subStagePill').classList.remove('d-none');
-      $('stagePill').textContent = state.stageName;
-      $('subStagePill').textContent = state.tieBreak ? 'Tie-break (Bonus)' : 'Normal';
-    }
+  $('globalQuestionPill').classList.remove('d-none');
+  $('stagePill').classList.remove('d-none');
+  $('subStagePill').classList.remove('d-none');
+
+  $('globalQuestionPill').textContent = `YARIŞMANIN ${state.globalQuestionNumber}. SORUSU`;
+  $('stagePill').textContent = state.stageName;
+  $('subStagePill').textContent = state.tieBreak ? 'Tie-break (Bonus)' : 'Normal';
+}
 
     function updateLiveScoreboard(){
   const sorted = sortTeamsByScore(state.activeTeamNames);
@@ -1865,13 +1870,15 @@ state.tieBreakExtra = {};
         qCounterText = `${state.stageAskedCount + 1}/${state.stageTotalQuestions}`;
       }
 
-      const q = pickRandomQuestion(catKey);
-      if(!q){
-        alert('Bu kategoride kullanılabilir soru kalmadı. (Soru bankasını genişletin)');
-        return;
-      }
+     const q = pickRandomQuestion(catKey);
+if(!q){
+  alert('Bu kategoride kullanılabilir soru kalmadı. (Soru bankasını genişletin)');
+  return;
+}
 
-      renderQuestion(q, qCounterText);
+state.globalQuestionNumber += 1;
+
+renderQuestion(q, qCounterText);
 
       if(!state.tieBreak){
         state.stageAskedCount += 1;
@@ -2094,9 +2101,11 @@ state.tieBreakBaseScores = {};
 state.tieBreakExtra = {};
 state.stageTieExtra = {};
 state.lastScoreAction = null;
+  state.globalQuestionNumber = 0;
 
-  $('stagePill').classList.add('d-none');
-  $('subStagePill').classList.add('d-none');
+ $('globalQuestionPill').classList.add('d-none');
+$('stagePill').classList.add('d-none');
+$('subStagePill').classList.add('d-none');
   $('teamTextarea').value = '';
   $('btnBeginStage1').disabled = true;
 
